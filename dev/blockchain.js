@@ -5,6 +5,9 @@ const sha256 = require("sha256");
 function Blockchain() {
   this.chain = [];
   this.pendingTransactions = [];
+
+  // Since we don't have value of previousBlockHash, and hash for genesis block, we pass some arbitary parameters.
+  this.createNewBlock(100, "0", "0");
 }
 
 /**
