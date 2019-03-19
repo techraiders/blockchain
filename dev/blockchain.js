@@ -1,5 +1,7 @@
 "use strict";
 
+const sha256 = require("sha256");
+
 function Blockchain() {
   this.chain = [];
   this.pendingTransactions = [];
@@ -40,6 +42,18 @@ Blockchain.prototype.createNewTransaction = function(
   };
   this.pendingTransactions.push(newTransaction);
   return this.getLastBlock()["index"] + 1;
+};
+
+Blockchain.prototype.hashBlock = function(
+  previousBlockHash,
+  currentBlockData,
+  nonce
+) {
+  const dataAsString =
+    previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
+
+  const hash = sha256(dataAsString);
+  return hash;
 };
 
 module.exports = Blockchain;
