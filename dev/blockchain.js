@@ -56,6 +56,26 @@ Blockchain.prototype.hashBlock = function(
   return hash;
 };
 
+/** PROOF OF Work: We don't want any invalid block created and added to the chain, we want to make sure every block that is added to the chain is legitimate, and has the correct transaction and correct data inside of it.
+ *
+ * Because if it doesn't have the correct transaction and the correct data, then people could fake how much bitcoin they have, and can cause fraud, and steal money from other people.
+ *
+ * So, everytime we create a new block, we first have to make sure, that is is a legitimate block by mining it through proof of work.
+ */
+
+Blockchain.prototype.proofOfWork = function(
+  previousBlockHash,
+  currentBlockData
+) {
+  let nonce = 0;
+  let hash = this.hashBlock(this.previousBlockHash, currentBlockData, nonce);
+
+  while (hash.substr(0, 4) !== "0000") {
+    hash = this.hashBlock(previousBlockHash, currentBlockData, ++nonce);
+  }
+  return nonce;
+};
+
 module.exports = Blockchain;
 
 /** Features of this BlockChain:
