@@ -2,10 +2,10 @@
   "name": "blockchain",
   "version": "1.0.0",
   "description": "",
-  "main": "dev/test.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/.bin/nodemon"
+    "start": "nodemon --watch dev -e js dev/api.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,9 @@
     "nodemon": "^1.18.10"
   },
   "dependencies": {
-    "sha256": "^0.2.0"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "sha256": "^0.2.0",
+    "uuid": "^3.3.2"
   }
 }
