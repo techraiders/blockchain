@@ -2,9 +2,9 @@ const express = require("express"),
   app = express(),
   bodyParser = require("body-parser"),
   BlockChain = require("./blockchain"),
-  uuid = require("uuid/v1");
-
-const port = process.argv[2];
+  uuid = require("uuid/v1"),
+  port = process.argv[2],
+  rp = require("request-promise");
 
 const nodeAddress = uuid()
   .split("-")
@@ -54,6 +54,61 @@ app.get("/mine", (req, res) => {
 
   res.send({ note: "New block mined successfully", block: newBlock });
 });
+
+app.post(`/register-and-broadcast-node`, (req, res) => {
+  const { newNodeUrl } = req.body;
+  if (!bitcoin.networkNodes.includes(newNodeUrl)) {
+    bitcoin.networkNodes.push(newNodeUrl);
+    const regNodesPromises = [];
+    bitcoin.networkNodes.forEach(networkNodeUrl => {
+      const requestOptions = {
+        uri: `${networkNodeUrl}/register-node`,
+        method: `POST`,
+        body: { newNodeUrl },
+        json: true
+      };
+      regNodesPromises.push(rp(requestOptions));
+    });
+
+    Promise.all(regNodesPromises)
+      .then(data => {
+        const buldRegisterOptions = {
+          uri: `${newNodeUrl}/register-nodes-bulk`,
+          method: `POST`,
+          body: {
+            allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl]
+          },
+          json: true
+        };
+
+        return rp(buldRegisterOptions);
+      })
+      .then(data => {
+        res.send({ note: `New node registered with network successfully.` });
+      });
+  } else {
+  }
+});
+
+// registers a node with the network
+app.post(`/register-node`, (req, res) => {
+  const {
+    body: { newNodeUrl }
+  } = req;
+
+  if (
+    !bitcoin.networkNodes.includes(newNodeUrl) &&
+    bitcoin.currentNodeUrl !== newNodeUrl
+  ) {
+    bitcoin.networkNodes.push(newNodeUrl);
+    res.send({ note: `New node registered successfully with node.` });
+  } else {
+    res.send({ note: `Node already exists.` });
+  }
+});
+
+// registers multiple nodes
+app.post(`/register-nodes-bulk`, (req, res) => {});
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
