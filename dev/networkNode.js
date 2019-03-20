@@ -4,6 +4,8 @@ const express = require("express"),
   BlockChain = require("./blockchain"),
   uuid = require("uuid/v1");
 
+const port = process.argv[2];
+
 const nodeAddress = uuid()
   .split("-")
   .join("");
@@ -53,6 +55,6 @@ app.get("/mine", (req, res) => {
   res.send({ note: "New block mined successfully", block: newBlock });
 });
 
-app.listen(3000, () => {
-  console.log(`Listening on port 3000`);
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });
